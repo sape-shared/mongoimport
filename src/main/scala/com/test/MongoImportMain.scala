@@ -1,5 +1,8 @@
 package com.test
 
+import java.text.SimpleDateFormat
+import java.util.Calendar
+
 import com.mongodb.spark.config.WriteConfig
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._
@@ -12,9 +15,9 @@ object MongoImportMain {
 
     val logger = Logger.getLogger(this.getClass())
 
-    if (arg.length < 3) {
+    if (arg.length < 4) {
       logger.error("=> wrong parameters number")
-      System.err.println("Usage: MongoImportMain <path-to-files> <output-path> <valuation-date>")
+      System.err.println("Usage: MongoImportMain <path-to-files> <output-path> <valuation-date> <no-of-days>")
       System.exit(1)
     }
 
@@ -27,20 +30,37 @@ object MongoImportMain {
     val outputPath = arg(1)
     val valuationDate = arg(2)
 
-    logger.info("=> jobName \"" + jobName + "\"")
-    logger.info("=> pathToFiles \"" + pathToFiles + "\"")
+    val noOfDays = arg(3).toInt
 
-    val data = sc.textFile(pathToFiles, 4)
+    for (i <- 0 to noOfDays) {
+      val outputFolder = getIncrementedDate(valuationDate, i)
 
-    val files = data.flatMap { line =>
-      val hsbcTradeId = line.split(",")(0)
-      val tradeId = line.split(",")(1)
-      DataGenerator.getScalarSchema(hsbcTradeId, tradeId, valuationDate) :::
-      DataGenerator.get1DSchema(hsbcTradeId, tradeId, valuationDate) :::
-      DataGenerator.get2DSchema(hsbcTradeId, tradeId, valuationDate)
+      logger.info("=> jobName \"" + jobName + "\"")
+      logger.info("=> pathToFiles \"" + pathToFiles + "\"")
+
+      val data = sc.textFile(pathToFiles, 4)
+
+      val files = data.flatMap { line =>
+        val hsbcTradeId = line.split(",")(0)
+        val tradeId = line.split(",")(1)
+        DataGenerator.getScalarSchema(hsbcTradeId, tradeId, valuationDate) :::
+          DataGenerator.get1DSchema(hsbcTradeId, tradeId, valuationDate) :::
+          DataGenerator.get2DSchema(hsbcTradeId, tradeId, valuationDate)
+      }
+
+      files.saveAsTextFile(outputFolder)
     }
 
-    files.saveAsTextFile(outputPath)
   }
 
+  import java.util.Date
+
+  def getIncrementedDate(valuationDate: String, noOfDays: Int): String = {
+    val formatter: SimpleDateFormat = new SimpleDateFormat("yyyyMMdd")
+    val date: Date = formatter.parse(valuationDate)
+    val c: Calendar = Calendar.getInstance
+    c.setTime(date) // Now use today date.
+    c.add(Calendar.DATE, noOfDays)
+    formatter.format(c.getTime)
+  }
 }
