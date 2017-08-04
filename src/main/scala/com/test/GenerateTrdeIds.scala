@@ -8,6 +8,12 @@ import scala.annotation.tailrec
   * Created by bgup12 on 8/2/2017.
   */
 object GenerateTrdeIds extends App {
+
+  val startTradeId = args(0).toInt
+  val numberOfTrades = args(1).toInt
+  val numberOfFiles = args(2).toInt
+  val path = args(3)
+
   def generateTradeId(startFromTradeId: Int, numOfTradeId: Int, numOfFiles: Int, path: String, fileNamePrefix: String) = {
     @tailrec
     def generate(startFromTradeId: Int, endWithTradeId: Int, batchSize: Int, reducedBatchSize: Int, fileNum: Int, bufferWriter: BufferedWriter): String = {
@@ -52,7 +58,7 @@ object GenerateTrdeIds extends App {
     generate(startFromTradeId, startFromTradeId + numOfTradeId - 1, batchSize, reducedBatchSize, 0, initBufferWriter)
   }
 
-  generateTradeId(100, 1000000, 4, "mongo_trades", "trade_id")
+  generateTradeId(startTradeId, numberOfTrades, numberOfFiles, path, "trade_id")
 }
 
 
