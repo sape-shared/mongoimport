@@ -23,7 +23,7 @@ object MongoImportMain {
 
     val jobName = "MongoImportMain"
 
-    val conf = new SparkConf().setAppName(jobName)
+    val conf = new SparkConf().setAppName(jobName).setMaster("local[*]")
     val sc = new SparkContext(conf)
 
     val pathToFiles = arg(0)
@@ -31,6 +31,7 @@ object MongoImportMain {
     val valuationDate = arg(2)
 
     val noOfDays = arg(3).toInt
+    val data = sc.textFile(pathToFiles, 4).cache()
 
     for (i <- 0 to noOfDays) {
       val outputFolder = getIncrementedDate(valuationDate, i)
@@ -38,14 +39,13 @@ object MongoImportMain {
       logger.info("=> jobName \"" + jobName + "\"")
       logger.info("=> pathToFiles \"" + pathToFiles + "\"")
 
-      val data = sc.textFile(pathToFiles, 4)
-
       val files = data.flatMap { line =>
         val hsbcTradeId = line.split(",")(0)
         val tradeId = line.split(",")(1)
-        DataGenerator.getScalarSchema(hsbcTradeId, tradeId, valuationDate) :::
-          DataGenerator.get1DSchema(hsbcTradeId, tradeId, valuationDate) :::
-          DataGenerator.get2DSchema(hsbcTradeId, tradeId, valuationDate)
+        val bookId = hsbcTradeId.substring(10,14)
+        DataGenerator.getScalarSchema(hsbcTradeId, tradeId,bookId, valuationDate) :::
+          DataGenerator.get1DSchema(hsbcTradeId, tradeId,bookId, valuationDate) :::
+          DataGenerator.get2DSchema(hsbcTradeId, tradeId,bookId, valuationDate)
       }
 
       files.saveAsTextFile(outputFolder)
