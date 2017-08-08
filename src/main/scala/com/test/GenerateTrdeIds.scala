@@ -14,6 +14,9 @@ object GenerateTrdeIds extends App {
   val numberOfFiles = args(2).toInt
   val path = args(3)
 
+  val fileNamePrefix = "trade_id"
+
+
   def generateTradeId(startFromTradeId: Int, numOfTradeId: Int, numOfFiles: Int, path: String, fileNamePrefix: String) = {
     @tailrec
     def generate(startFromTradeId: Int, endWithTradeId: Int, batchSize: Int, reducedBatchSize: Int, fileNum: Int, bufferWriter: BufferedWriter): String = {
@@ -58,7 +61,9 @@ object GenerateTrdeIds extends App {
     generate(startFromTradeId, startFromTradeId + numOfTradeId - 1, batchSize, reducedBatchSize, 0, initBufferWriter)
   }
 
-  generateTradeId(startTradeId, numberOfTrades, numberOfFiles, path, "trade_id")
+
+  generateTradeId(startTradeId, numberOfTrades, numberOfFiles, path, fileNamePrefix )
+
 }
 
 
