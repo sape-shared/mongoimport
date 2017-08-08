@@ -3,12 +3,11 @@ package com.test
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
-import com.mongodb.spark.config.WriteConfig
+
 import org.apache.spark.SparkContext
-import org.apache.spark.SparkContext._
 import org.apache.spark.SparkConf
 import org.apache.log4j.Logger
-import com.test
+
 
 object MongoImportMain {
   def main(arg: Array[String]) {
@@ -31,9 +30,9 @@ object MongoImportMain {
     val valuationDate = arg(2)
 
     val noOfDays = arg(3).toInt
-    val data = sc.textFile(pathToFiles, 4).cache()
+    val data = sc.textFile(pathToFiles).cache()
 
-    for (i <- 0 to noOfDays) {
+    for (i <- 0 to noOfDays-1) {
       val outputFolder = getIncrementedDate(valuationDate, i)
 
       logger.info("=> jobName \"" + jobName + "\"")
@@ -48,7 +47,7 @@ object MongoImportMain {
           DataGenerator.get2DSchema(hsbcTradeId, tradeId,bookId, valuationDate)
       }
 
-      files.saveAsTextFile(outputFolder)
+      files.saveAsTextFile(outputPath+"/"+outputFolder)
     }
 
   }
