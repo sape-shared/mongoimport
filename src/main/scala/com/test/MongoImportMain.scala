@@ -42,9 +42,7 @@ object MongoImportMain {
         val hsbcTradeId = line.split(",")(0)
         val tradeId = line.split(",")(1)
         val bookId = hsbcTradeId.substring(10,14)
-        DataGenerator.getScalarSchema(hsbcTradeId, tradeId,bookId, valuationDate) :::
-          DataGenerator.get1DSchema(hsbcTradeId, tradeId,bookId, valuationDate) :::
-          DataGenerator.get2DSchema(hsbcTradeId, tradeId,bookId, valuationDate)
+        DataGenerator.getSchema(hsbcTradeId, tradeId,bookId, valuationDate)
       }
 
       files.saveAsTextFile(outputPath+"/"+outputFolder)
