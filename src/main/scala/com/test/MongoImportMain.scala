@@ -22,7 +22,7 @@ object MongoImportMain {
 
     val jobName = "MongoImportMain"
 
-    val conf = new SparkConf().setAppName(jobName)
+    val conf = new SparkConf().setAppName(jobName).setMaster("local[*]")
     val sc = new SparkContext(conf)
 
     val pathToFiles = arg(0)
@@ -41,7 +41,7 @@ object MongoImportMain {
       val files = data.flatMap { line =>
         val hsbcTradeId = line.split(",")(0)
         val tradeId = line.split(",")(1)
-        val bookId = hsbcTradeId.substring(10,14)
+        val bookId = tradeId.takeRight(4)
         DataGenerator.getSchema(hsbcTradeId, tradeId,bookId, valuationDate)
       }
 
