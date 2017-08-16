@@ -43,10 +43,10 @@ object GenerateTrdeIds extends App {
 
     def tradeId(tradeIdNum: Int, bufferWriter: BufferedWriter) = {
       val tradeId = {
-        if (tradeIdNum % 5 == 0) "000000237974" + "X" + tradeIdNum + "," + tradeIdNum
-        else if (tradeIdNum % 1 == 0) "000000237974" + "B" + tradeIdNum + "," + tradeIdNum
-        else if (tradeIdNum % 2 == 0) "000000237974" + "F" + tradeIdNum + "," + tradeIdNum
-        else if (tradeIdNum % 3 == 0) "000000237974" + "L" + tradeIdNum + "," + tradeIdNum
+        if (tradeIdNum % 5 == 0) "000000237974" + "X" + tradeIdNum + "," + "%09d".format(tradeIdNum)
+        else if (tradeIdNum % 1 == 0) "000000237974" + "B" + tradeIdNum + "," + "%09d".format(tradeIdNum)
+        else if (tradeIdNum % 2 == 0) "000000237974" + "F" + tradeIdNum + "," + "%09d".format(tradeIdNum)
+        else if (tradeIdNum % 3 == 0) "000000237974" + "L" + tradeIdNum + "," + "%09d".format(tradeIdNum)
         else "000000237974" + tradeIdNum + "," + tradeIdNum
       }
       bufferWriter.write(tradeId)
