@@ -22,7 +22,7 @@ object MongoImportMain {
 
     val jobName = "MongoImportMain"
 
-    val conf = new SparkConf().setAppName(jobName).setMaster("local[*]")
+    val conf = new SparkConf().setAppName(jobName)
     val sc = new SparkContext(conf)
 
     val pathToFiles = arg(0)
